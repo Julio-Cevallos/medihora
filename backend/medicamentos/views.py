@@ -1,5 +1,6 @@
 from rest_framework import viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .models import Usuario, Medicamento, Recordatorio, Toma, Contacto
 from .serializers import (
@@ -61,3 +62,22 @@ class ContactoViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         usuarios = Usuario.objects.filter(cuenta=self.request.user)
         return Contacto.objects.filter(usuario__in=usuarios)
+    
+# Endpoint público en Django
+@api_view(['GET']) # solo acepta peticiones get
+@permission_classes([AllowAny]) # no requiere permisos
+def medicamentos_publicos(request): # (request) manda la petición HTTTP
+    medicamentos = Medicamento.objects.all()[:10] # limita a 10 medicamentos
+    data= [{
+        'id': med.id ,
+        'nombre': med.nombre,
+        'dosis': med.dosis_predeterminada,
+        'nota': med.nota_general
+    } for med in medicamentos]
+
+    return Response({
+        'total': Medicamento.objects.count(),
+        'medicamentos': data
+    })
+
+

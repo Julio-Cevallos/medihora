@@ -11,4 +11,5 @@ router.register(r'contactos', views.ContactoViewSet, basename='contacto')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('medicamentos-publicos/', views.medicamentos_publicos, name='medicamentos-publicos'),
 ]
